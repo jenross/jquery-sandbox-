@@ -1,7 +1,11 @@
+//will need more initial directions and button to begin game 
+
 let qtemplate = '';
 let intervalId;
 let qTimer = 30;
-let questionCount = 0; 
+let questionCount = 0;
+let btwQTimer = 5;//maybe too long? 
+let score = 0;   
 //will need to add images; might be good to store these in their own js file;
 let quiz = [
 {   
@@ -58,6 +62,7 @@ function handleQandA() {
     // }
     // questionCount++;
     $('.qanda-disp').append(qtemplate);
+    questionTimerRun();
 }
 
 // handleQandA();
@@ -69,6 +74,7 @@ function questionTimerRun() {
     intervalId = setInterval(decrement, 1000);
 }
 
+//get time remaining to be part of this so it can hide, too 
 function decrement() {
     qTimer--;
     $('.timer').text(qTimer);
@@ -78,11 +84,23 @@ function decrement() {
     }
 }
 
-function timeToNext() {
-    console.log("5 seconds");
+function timeToNextQ() {
+    clearInterval(intervalId);
+    intervalId = setInterval(decrementBtw, 1000);
+}
+
+function decrementBtw() {
+    btwQTimer--;
+    if (btwQTimer === 0) {
+        console.log("on to the next");
+        nextQuestion();
+        handleQandA();
+    }
 }
 
 //answer correct or incorrect, img and message displayed
+//need to add in what happens when time runs out 
+//goes immediately to next question without delay 
 function handleResponse()  {
     $('.submit-btn').on('click', function (event){
         event.preventDefault();
@@ -90,32 +108,61 @@ function handleResponse()  {
         console.log(userAnswer);
         let correctAnswer = `${quiz[questionCount].correctAnswer}`;
         console.log(correctAnswer);
+
+        // if (questionCount === 9) {
+        //     $('.qanda-disp').empty();
+        //     $('.timer').hide();
+        //     $('.response-feedback').text('Your score was: ' + score);
+        //     //display end-of-game img 
+        // }
+
         if (userAnswer === correctAnswer) {
             $('.qanda-disp').empty();
+            $('.timer').hide();
             $('.response-feedback').text('You got it correct!');
+            score++;
+            timeToNextQ();
             //show img that correlates with answer
-            setTimeout(timeToNext, 1000 * 5);
+            // setTimeout(timeToNext, 1000 * 5);
+            // nextQuestion();
+            // handleQandA();
         } else {
             $('.qanda-disp').empty();
+            $('.timer').hide();
             $('.response-feedback').text('You got it wrong. The answer was: ' + correctAnswer);
+            timeToNextQ();
             //show img 
-            setTimeout(timeToNext, 1000 * 5);
-        }
+            // setTimeout(timeToNext, 1000 * 5);
+            // nextQuestion();
+            // handleQandA();
+        } 
     });
 }
 
 function nextQuestion() {
+    // setTimeout(timeToNextQ, 1000 * 5);
     questionCount++;
     // handleQandA();
     // questionTimerRun();
     // handleResponse();
+    $('.timer').show(); 
+    $('.response-feedback').hide(); 
 }
+
+//could add this to if/else in handle q and a function 
+function dispResults() {
+        $('.qanda-disp').empty();
+        $('.timer').hide();
+        $('.response-feedback').text('Congratulations! Your score was: ' + score);
+        //display end-of-game img 
+}
+
 
 function startQuiz() {
     // qTimer = 30;
     questionCount = 0;
     handleQandA();
-    questionTimerRun();
+    // questionTimerRun();
     handleResponse();
     // nextQuestion();
 }
