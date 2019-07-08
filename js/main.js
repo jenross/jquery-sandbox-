@@ -1,7 +1,8 @@
 let qtemplate = '';
 let intervalId;
 let qTimer = 30;
-//will need to add images; might be good to store these in their own js file
+let questionCount = 0; 
+//will need to add images; might be good to store these in their own js file;
 let quiz = [
 {   
     question: 'How many plays did Shakespeare write?',
@@ -15,10 +16,9 @@ let quiz = [
 }   
 ];
 
-//need to figure out how to get this to go from question to question
 function handleQandA() {
 
-    for (let questionCount = 0; questionCount < quiz.length; questionCount++) {
+    // for (let questionCount = 0; questionCount < quiz.length; questionCount++) {
         
         qtemplate = `<div class='question-template'>
     
@@ -46,18 +46,23 @@ function handleQandA() {
         <input type='radio' name='answer-option' value='${quiz[questionCount].answers[3]}'>
         <span>${quiz[questionCount].answers[3]}</span>
         </label>
+
+        <button type="submit" class="submit-btn">Submit</button>
     
         </fieldset>
         </form>
         </div>`;
-        
-    }
+
+    //     let correctAnswer = `${quiz[questionCount].correctAnswer}`;
+    //     console.log(correctAnswer);
+    // }
     // questionCount++;
     $('.qanda-disp').append(qtemplate);
 }
 
-handleQandA();
-questionTimerRun();
+// handleQandA();
+// questionTimerRun();
+// handleResponse();
 
 function questionTimerRun() {
     clearInterval(intervalId);
@@ -69,19 +74,50 @@ function decrement() {
     $('.timer').text(qTimer);
     if (qTimer === 0) {
         clearInterval(intervalId);
-        //handleResponse();
+        // handleResponse();
     }
 }
 
-function handleResponse()  {
+function timeToNext() {
+    console.log("5 seconds");
+}
 
+//answer correct or incorrect, img and message displayed
+function handleResponse()  {
+    $('.submit-btn').on('click', function (event){
+        event.preventDefault();
+        let userAnswer = $('input:checked').val();
+        console.log(userAnswer);
+        let correctAnswer = `${quiz[questionCount].correctAnswer}`;
+        console.log(correctAnswer);
+        if (userAnswer === correctAnswer) {
+            $('.qanda-disp').empty();
+            $('.response-feedback').text('You got it correct!');
+            //show img that correlates with answer
+            setTimeout(timeToNext, 1000 * 5);
+        } else {
+            $('.qanda-disp').empty();
+            $('.response-feedback').text('You got it wrong. The answer was: ' + correctAnswer);
+            //show img 
+            setTimeout(timeToNext, 1000 * 5);
+        }
+    });
 }
 
 function nextQuestion() {
-    $('.qanda-disp').empty();
-
+    questionCount++;
+    // handleQandA();
+    // questionTimerRun();
+    // handleResponse();
 }
 
 function startQuiz() {
-
+    // qTimer = 30;
+    questionCount = 0;
+    handleQandA();
+    questionTimerRun();
+    handleResponse();
+    // nextQuestion();
 }
+
+startQuiz(); 
